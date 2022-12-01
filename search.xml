@@ -96,6 +96,56 @@
     </entry>
     
     
+    
+    <entry>
+      <title>markdown的语法续</title>
+      <link href="/2022/11/01/markdown%E8%AF%AD%E6%B3%95%E7%BB%AD/"/>
+      <url>/2022/11/01/markdown%E8%AF%AD%E6%B3%95%E7%BB%AD/</url>
+      
+        <content type="html"><![CDATA[<h2 id="markdown语法续"><a href="#markdown语法续" class="headerlink" title="markdown语法续"></a>markdown语法续</h2><h3 id="Markdown引用"><a href="#Markdown引用" class="headerlink" title="Markdown引用"></a>Markdown引用</h3><p>在引用的文字之前加 &gt; 即可</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">示例：</span><br><span class="line">   &gt;这是引用的内容</span><br><span class="line"> </span><br></pre></td></tr></table></figure><h4 id="效果演示"><a href="#效果演示" class="headerlink" title="效果演示"></a>效果演示</h4><blockquote><p>这是效果演示</p></blockquote><h3 id="Markdown图片"><a href="#Markdown图片" class="headerlink" title="Markdown图片"></a>Markdown图片</h3><p>Markdown 图片语法格式如下</p><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">!   <span class="selector-attr">[alt 属性文本]</span>(图片地址)</span><br><span class="line"></span><br><span class="line">!   <span class="selector-attr">[alt 属性文本]</span>(图片地址 &quot;可选标题&quot;)</span><br></pre></td></tr></table></figure><ul><li><p>开头一个感叹号 !</p></li><li><p>接着一个方括号，里面放上图片的替代文字</p></li><li><p>接着一个普通括号，里面放上图片的网址，最后还可以用引号包住并加上选择性的 ‘title’ 属性的文字。</p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">示例：![图片]（https/xxxxxxxx图片地址）</span><br></pre></td></tr></table></figure></li></ul><h3 id="Markedown链接"><a href="#Markedown链接" class="headerlink" title="Markedown链接"></a>Markedown链接</h3><p>Markdown 链接的语法格式如下：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> [链接名称](链接地址)</span><br><span class="line">或者</span><br><span class="line"> &lt;链接地址&gt;</span><br></pre></td></tr></table></figure><p>示例：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">这个是一个链接[百度](https://www.baidu.com)</span><br></pre></td></tr></table></figure><p>效果如下：</p><p>这个是一个链接<a href="https://www.baidu.com/">百度</a></p><h3 id="Markdown表格"><a href="#Markdown表格" class="headerlink" title="Markdown表格"></a>Markdown表格</h3><p>Markdown 制作表格使用 | 来分隔不同的单元格，使用 - 来分隔表头和其他行。</p><p>语法格式:</p><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> |<span class="params">  表头   </span>| 表头  |<span class="params"> 表头</span>|</span><br><span class="line"> |<span class="params">  :---  </span>| <span class="symbol">:--</span>:  |<span class="params">---:</span></span><br><span class="line"><span class="params"> </span>| 单元格  |<span class="params"> 单元格 </span>| 单元格|<span class="params"></span></span><br><span class="line"><span class="params"> </span>| 单元格  |<span class="params"> 单元格 </span>| 单元格|<span class="params"></span></span><br><span class="line"><span class="params"> </span></span><br><span class="line"><span class="params"> 第二行分割表头和内容。</span></span><br><span class="line"><span class="params"> - 有一个就行，为了对齐，多加了几个</span></span><br><span class="line"><span class="params"> 文字默认居左</span></span><br><span class="line"><span class="params">-两边加：表示文字居中</span></span><br><span class="line"><span class="params">-右边加：表示文字居右</span></span><br></pre></td></tr></table></figure><p>效果如下</p><table><thead><tr><th align="left">表头</th><th align="center">表头</th><th align="right">表头</th></tr></thead><tbody><tr><td align="left">单元格</td><td align="center">单元格</td><td align="right">单元格</td></tr><tr><td align="left">单元格</td><td align="center">单元格</td><td align="right">单元格</td></tr></tbody></table>]]></content>
+      
+      
+      <categories>
+          
+          <category> markdown </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> markdown </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>markdown的基本语法</title>
+      <link href="/2022/11/01/markdown%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95/"/>
+      <url>/2022/11/01/markdown%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95/</url>
+      
+        <content type="html"><![CDATA[<h1 id="markdown的基本语法"><a href="#markdown的基本语法" class="headerlink" title="markdown的基本语法"></a>markdown的基本语法</h1><h2 id="markdown语法常用的功能"><a href="#markdown语法常用的功能" class="headerlink" title="markdown语法常用的功能"></a>markdown语法常用的功能</h2><table><thead><tr><th>功能</th><th>快捷键</th></tr></thead><tbody><tr><td>加粗</td><td>Ctrl + B</td></tr><tr><td>斜体</td><td>Ctrl + I</td></tr><tr><td>引用</td><td>Ctrl + Q</td></tr><tr><td>插入链接</td><td>Ctrl + L</td></tr><tr><td>插入代码</td><td>Ctrl + K</td></tr><tr><td>插入图片</td><td>Ctrl + G</td></tr><tr><td>提升标题</td><td>Ctrl + H</td></tr><tr><td>有序列表</td><td>Ctrl + O</td></tr><tr><td>无序列表</td><td>Ctrl + U</td></tr><tr><td>横线</td><td>Ctrl + R</td></tr><tr><td>撤销</td><td>Ctrl + Z</td></tr><tr><td>重做</td><td>Ctrl + Y</td></tr></tbody></table><h2 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h2><h3 id="字体设置斜体、粗体、删除线（括号里面没有空格只是为了显示效果）"><a href="#字体设置斜体、粗体、删除线（括号里面没有空格只是为了显示效果）" class="headerlink" title="字体设置斜体、粗体、删除线（括号里面没有空格只是为了显示效果）"></a>字体设置斜体、粗体、删除线（括号里面没有空格只是为了显示效果）</h3><table><thead><tr><th>功能</th><th>效果</th></tr></thead><tbody><tr><td>正常文字</td><td>正常文字</td></tr><tr><td>倾斜文字 （ * 加文字 * ）</td><td><em>倾斜文字</em></td></tr><tr><td>加粗文字（ ** 加文字 **）</td><td><strong>加粗文字</strong></td></tr><tr><td>文字倾斜加粗 （* * * 加文字 * * *）</td><td><em><strong>文字倾斜加粗</strong></em></td></tr><tr><td>下划线文字 （~~ 加文字 ~~）</td><td><del>下划线文字</del></td></tr></tbody></table><h3 id="分级标题"><a href="#分级标题" class="headerlink" title="分级标题"></a>分级标题</h3><table><thead><tr><th>功能</th></tr></thead><tbody><tr><td>一级标题（#一级标题）</td></tr><tr><td>二级标题（##二级标题）</td></tr><tr><td>三级标题（##三级标题）</td></tr><tr><td>…..</td></tr><tr><td>…..</td></tr></tbody></table><h3 id="分割线"><a href="#分割线" class="headerlink" title="分割线"></a>分割线</h3><p>你可以在一行中用三个以上的星号(*)、减号(-)、底线(_)来建立一个分隔线，行内不能有其他东西。你也可以在星号或是减号中间插入空格。</p><p>效果展示</p><hr><hr><h3 id="代码块"><a href="#代码块" class="headerlink" title="代码块"></a>代码块</h3><p>对于程序员来说这个功能是必不可少的，插入程序代码的方式有两种，一种是利用缩进(tab), 另一种是利用英文“&#96;”符号（一般在ESC键下方，和~同一个键）</p><p>这个一个例子 <code>效果</code></p><p><strong>多行代码块与语法高亮</strong>：在需要高亮的代码块的前一行及后一行使用三个单反引号“&#96;”包裹，就可以了。</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">include&lt;stdio.h&gt;</span><br><span class="line"><span class="type">void</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line"><span class="title function_">printf</span><span class="params">(<span class="string">&quot;hello word&quot;</span>)</span>;</span><br></pre></td></tr></table></figure><p>代码块里面包含html代码在代码区块里面， &amp; 、 &lt; 和 &gt; 会自动转成 HTML 实体，这样的方式让你非常容易使用 Markdown 插入范例用的 HTML 原始码，只需要复制贴上，剩下的 Markdown 都会帮你处理。</p><h3 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h3><p>无序列表</p><p>使用 *，+，- 表示无序列表。<br>注意：符号后面一定要有一个空格，起到缩进的作用。</p><ul><li>无序列表</li><li>无序列表</li></ul><p>有序列表<br>使用数字和一个英文句点表示有序列表。<br>注意：英文句点后面一定要有一个空格，起到缩进的作用。</p><ol><li>有序列表</li><li>有序列表</li></ol><p>无序列表和有序列表同时使用</p><ul><li><ol><li>列表合并使用</li></ol></li></ul><p>列表和其它要素混合使用<br>列表不光可以单独使用，也可以使用其他的 Markdown 语法，包括标题、引用、代码区块等。</p><p>注意：</p><p>（1）加粗效果不能直接用于列表标题里面，但是可以嵌套在列表里面混合使用。<br>（2）列表中包含代码块（前面加2个tab或者8个空格，并且需要空一行，否则不显示）。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> markdown </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> markdown </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
   
   
 </search>
