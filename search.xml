@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>github+picgo搭建个人图床</title>
+      <link href="/2022/12/03/picgo%E4%B8%AA%E4%BA%BA%E5%9B%BE%E5%BA%8A%E6%90%AD%E5%BB%BA/"/>
+      <url>/2022/12/03/picgo%E4%B8%AA%E4%BA%BA%E5%9B%BE%E5%BA%8A%E6%90%AD%E5%BB%BA/</url>
+      
+        <content type="html"><![CDATA[<p><code>&lt;center&gt;</code>github+picgo搭建个人图床</p><h1 id="一、创建仓库"><a href="#一、创建仓库" class="headerlink" title="一、创建仓库"></a>一、创建仓库</h1><p><strong>在GitHub中新建 public 仓库 -&gt; 创建 token -&gt; 复制 token 备用</strong></p><p>1.在github新建仓库，权限为公开，勾选Add a README file ，仓库名自己写。</p><p>2.仓库建立后，右上角图像下方 settings -&gt;在页面左边选择 Developer settings -&gt;页面左边Personal access tokens -&gt; 页面右上 Generate new token （token description 随便填一下，勾选repo）-&gt; 创建</p><p>3.会生成一个token码，需要保存。（关闭页面后会消失）</p><p>4.生成如下仓库（img不用管）</p><p>![](<a href="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE">https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/屏幕截图</a> 2022-12-03 213215.jpg)</p><h1 id="二、下载picgo并配置"><a href="#二、下载picgo并配置" class="headerlink" title="二、下载picgo并配置"></a>二、下载picgo并配置</h1><p>1.进入picgo<a href="https://picgo.github.io/PicGo-Doc/zh/">官网</a>，下载自己电脑适配的稳定版本。按照步骤点下一步就行。</p><p>2.图床设置 -&gt; 选择github -&gt; 进行如下配置</p><p><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202022-12-03%20214116.jpg"></p><ul><li>自定义域名除仓库名外为固定写法<a href="https://cdn.jsdelivr.net/gh+%E4%BB%93%E5%BA%93%E5%90%8D">https://cdn.jsdelivr.net/gh+仓库名</a></li><li>配置完成后确定并设为默认图床</li></ul><p>3.使用</p><ul><li>直接将文件拖至上传区即可上传完成</li><li>点击相册使用图片</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> picgo </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> picgo </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>mysql笔记</title>
       <link href="/2022/12/01/mysql/"/>
       <url>/2022/12/01/mysql/</url>
