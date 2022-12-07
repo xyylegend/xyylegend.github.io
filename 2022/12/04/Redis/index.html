@@ -1,0 +1,327 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>redis学习笔记 | 邦尼的博客</title><meta name="author" content="邦尼"><meta name="copyright" content="邦尼"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="一、Redis持久化1.RDB 持久化(1) RDB 持久化在四种情况下会执行  执行 save 命令 执行 bgsave 命令 Redis 停机时 触发 RDB 条件时  (2)RDB 方式 bgsave 的基本流程？  fork主进程得到一个子进程，共享内存空间 子进程读取内存数据并写入新 的RDB 文件 用新 RDB 文件替换旧的 RDB 文件  bgsave 开始时会 fork主进程得">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redis学习笔记">
+<meta property="og:url" content="https://xyylegend.github.io/2022/12/04/Redis/index.html">
+<meta property="og:site_name" content="邦尼的博客">
+<meta property="og:description" content="一、Redis持久化1.RDB 持久化(1) RDB 持久化在四种情况下会执行  执行 save 命令 执行 bgsave 命令 Redis 停机时 触发 RDB 条件时  (2)RDB 方式 bgsave 的基本流程？  fork主进程得到一个子进程，共享内存空间 子进程读取内存数据并写入新 的RDB 文件 用新 RDB 文件替换旧的 RDB 文件  bgsave 开始时会 fork主进程得">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xyylegend.github.io/img/03.webp">
+<meta property="article:published_time" content="2022-12-04T14:55:33.000Z">
+<meta property="article:modified_time" content="2022-12-04T14:17:31.124Z">
+<meta property="article:author" content="邦尼">
+<meta property="article:tag" content="redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xyylegend.github.io/img/03.webp"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://xyylegend.github.io/2022/12/04/Redis/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'redis学习笔记',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-12-04 22:17:31'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><div class="aplayer no-destroy" data-id="2229469033" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true"> </div><link rel="stylesheet" href="/css/ls.css"><link rel="stylesheet" href="/css/mouse.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/./img/toux.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/./img/03.webp')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">邦尼的博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">redis学习笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-12-04T14:55:33.000Z" title="发表于 2022-12-04 22:55:33">2022-12-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-12-04T14:17:31.124Z" title="更新于 2022-12-04 22:17:31">2022-12-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/redis/">redis</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="redis学习笔记"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"></center>
+
+<h1 id="一、Redis持久化"><a href="#一、Redis持久化" class="headerlink" title="一、Redis持久化"></a>一、Redis持久化</h1><h2 id="1-RDB-持久化"><a href="#1-RDB-持久化" class="headerlink" title="1.RDB 持久化"></a>1.RDB 持久化</h2><p>(1) RDB 持久化在四种情况下会执行</p>
+<ul>
+<li>执行 save 命令</li>
+<li>执行 bgsave 命令</li>
+<li>Redis 停机时</li>
+<li>触发 RDB 条件时</li>
+</ul>
+<p>(2)RDB 方式 bgsave 的基本流程？</p>
+<ul>
+<li>fork主进程得到一个子进程，共享内存空间</li>
+<li>子进程读取内存数据并写入新 的RDB 文件</li>
+<li>用新 RDB 文件替换旧的 RDB 文件</li>
+</ul>
+<p><strong>bgsave 开始时会 fork主进程得到子进程，子进程共享主进程的内存数据。完成 fork 后读取内存数据并写入 RDB 文件。fork 采用的是 copy-on-write技术：当主进程执行读操作时，访问共享内存；当主进程执行写操作时，则会拷贝一份数据，执行写操作。</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/202206142216920.png"></p>
+<p>(3)RDB 的缺点</p>
+<ul>
+<li>RDB 执行间隔时间长，两次 RDB 之间写入数据有丢失的风险</li>
+<li>fork 子进程、压缩、写出 RDB 文件都比较耗时</li>
+</ul>
+<h2 id="2-AOF持久化"><a href="#2-AOF持久化" class="headerlink" title="2.AOF持久化"></a>2.AOF持久化</h2><p>（1）介绍：AOF全称为 Append Only File（追加文件），Redis 处理的每一个写命令都会记录在 AOF 文件，可以看做是命令日志文件。</p>
+<p>（2）AOF文件重写</p>
+<p>因为是记录命令，AOF 文件会比 RDB 文件大的多。而且 AOF 会记录对同一个 key 的多次写操作，但只有最后一次写操作才有意义。通过执行 bgrewriteaof 命令，可以让 AOF 文件执行重写功能，用最少的命令达到相同效果</p>
+<h1 id="二、Redis主从复制"><a href="#二、Redis主从复制" class="headerlink" title="二、Redis主从复制"></a>二、Redis主从复制</h1><p>单节点 Redis的并发能力是有上限的，要进一步提高 Redis 的并发能力，就需要搭建主从集群，实现读写分离</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/redis.png"></p>
+<h3 id="同步原理"><a href="#同步原理" class="headerlink" title="同步原理"></a>同步原理</h3><h4 id="1-全量同步"><a href="#1-全量同步" class="headerlink" title="1.全量同步"></a>1.全量同步</h4><ul>
+<li><strong>Replication      Id</strong>：简称      replid，是数据集的标记，id 一致则说明是同一数据集。每一个 master 都有唯一的replid，slave 则会继承 master 节点的      replid；</li>
+<li><strong>offset</strong>：偏移量，随着记录在      repl_baklog 中的数据增多而逐渐增大。slave 完成同步时也会记录当前同步的offset，即 slave 的 offset 永远小于等于      master 的 offset；当 slave 的 offset 小于 master 的 offset，说明 slave 数据落后于      master，需要更新。</li>
+</ul>
+<p>完整流程描述：</p>
+<ul>
+<li>slave 节点请求增量同步</li>
+<li>master 节点判断      replid，发现不一致，拒绝增量同步，选择全量同步</li>
+<li>master 将完整内存数据生成      RDB，发送 RDB 到 slave</li>
+<li>slave 清空本地数据，加载      master 的 RDB</li>
+<li>master 将 RDB      期间的命令记录在 repl_baklog，并持续将 log 中的命令发送给 slave</li>
+<li>slave 执行接收到的命令，保持与      master 之间的同步</li>
+</ul>
+<h4 id="2-增量同步"><a href="#2-增量同步" class="headerlink" title="2.增量同步"></a>2.增量同步</h4><p><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/redis2.png"></p>
+<p><strong>repl_backlog 原理</strong></p>
+<p>master 怎么知道 slave 与自己的数据差异在哪里？</p>
+<p>这就要说到全量同步时的 repl_baklog 文件了。</p>
+<p>这个文件是一个固定大小的数组，只不过数组是环形，也就是说<strong>角标到达数组末尾后，会再次从 0 开始读写</strong>，这样数组头部的数据就会被覆盖。repl_baklog 中会记录 Redis 处理过的命令日志及 offset，包括 master 当前的 offset 和 slave 已经拷贝到的 offset</p>
+<h4 id="3-主从同步优化"><a href="#3-主从同步优化" class="headerlink" title="3.主从同步优化"></a>3.主从同步优化</h4><p>主从同步可以保证主从数据的一致性，非常重要。可以从以下几个方面来优化 Redis 主从集群</p>
+<ul>
+<li>在 master 中配置 repl-diskless-sync      yes 启用无磁盘复制，避免全量同步时的磁盘      IO</li>
+<li>Redis      单节点上的内存占用不要太大，减少 RDB 导致的过多磁盘IO</li>
+<li>适当提高 repl_baklog      的大小，发现 slave 宕机时尽快实现故障恢复，尽可能避免全量同步</li>
+<li>限制一个 master 上的      slave 节点数量，如果实在是太多 slave，则可以采用<strong>主-从-从</strong>链式结构，减少 master 压力</li>
+</ul>
+<h1 id="三、Redis哨兵"><a href="#三、Redis哨兵" class="headerlink" title="三、Redis哨兵"></a>三、Redis哨兵</h1><p>Redis<br>提供了哨兵(Sentinel) 机制来实现主从集群的自动故障恢复</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/redis3.png"></p>
+<ul>
+<li><strong>监控</strong>：Sentinel 会不断检查您的      master 和 slave 是否按预期工作。</li>
+<li><strong>自动故障恢复</strong>：如果 master 故障，<strong>Sentinel      会将一个 slave 提升为 master</strong>。当故障实例恢复后也以新的 master 为主。</li>
+<li><strong>通知</strong>：Sentinel 充当 Redis      客户端的服务发现来源，当集群发生故障转移时，会将最新信息推送给 Redis 客户端。</li>
+</ul>
+<h2 id="1-集群监控原理"><a href="#1-集群监控原理" class="headerlink" title="1.集群监控原理"></a>1.集群监控原理</h2><p>Sentinel 基于心跳机制监测服务状态，每隔 1 秒向集群的每个实例发送 ping 命令</p>
+<ul>
+<li>主观下线：如果某 Sentinel      节点发现某实例未在规定时间响应，则认为该实例<strong>主观下线</strong>。</li>
+<li>客观下线：<strong>若超过指定数量(quorum)      的 Sentinel 都认为该实例主观下线</strong>，则该实例<strong>客观下线</strong>。quorum 值最好超过 Sentinel 实例数量的一半。</li>
+</ul>
+<h2 id="2-集群故障恢复原理"><a href="#2-集群故障恢复原理" class="headerlink" title="2.集群故障恢复原理"></a>2.集群故障恢复原理</h2><p>一旦发现 master 故障，sentinel 需要在 salve 中选择一个作为新的 master，步骤如下：</p>
+<ol>
+<li>首先会判断 slave 节点与 master 节点断开时间长短，如果超过指定值(down-after-milliseconds * 10)，则会排除该 slave 节点</li>
+<li>然后判断      slave 节点的 slave-priority 值，<strong>越小优先级越高</strong>，如果是 0 则永不参与选举</li>
+<li>如果      slave-prority 一样，则判断 slave 节点的      offset 值，越大说明数据越新，优先级越高</li>
+<li>最后是判断      slave 节点的运行 id 大小，越小优先级越高</li>
+</ol>
+<p>当选出一个新的 master 后，去实现切换：</p>
+<ol>
+<li>sentinel 给备选的 slave1 节点发送 slaveof no one 命令，让该节点成为 master</li>
+<li>sentinel      给所有其它 slave 发送      slaveof 192.168.150.101 7002 之类的命令，让这些      slave 成为新 master 的从节点，开始从新的      master 上同步数据</li>
+<li>最后，sentinel      将故障节点标记为 slave，当故障节点恢复后会自动成为新的      master 的 slave 节点</li>
+</ol>
+<h1 id="三、-redis分片集群"><a href="#三、-redis分片集群" class="headerlink" title="三、 redis分片集群"></a>三、 redis分片集群</h1><p>主从和哨兵可以解决高可用、<a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=%E9%AB%98%E5%B9%B6%E5%8F%91&spm=1001.2101.3001.7020">高并发</a>读的问题。但是依然有两个问题没有解决：</p>
+<ul>
+<li>海量数据存储问题</li>
+<li>高并发写的问题</li>
+</ul>
+<p>集群中有多个master，每个master保存不同数据</p>
+<p>每个master都可以有多个slave节点</p>
+<p>master之间通过ping监测彼此健康状态</p>
+<p>客户端请求可以访问集群任意节点，最终都会被转发到正确节点</p>
+<p>散列插槽</p>
+<p>Redis会把每一个master节点映射到0~16383共16384个插槽（hash slot）上</p>
+<h2 id="1-redis如何判断某个key应在哪个实例？"><a href="#1-redis如何判断某个key应在哪个实例？" class="headerlink" title="1.redis如何判断某个key应在哪个实例？"></a>1.redis如何判断某个key应在哪个实例？</h2><p>1.将16384个插槽分配到不同的实例</p>
+<p>2.根据key的有效部分计算哈希值，对16384取余</p>
+<p>3.余数作为插槽，寻找插槽所在的实例即可</p>
+<p><strong>redis如何将同一类数据固定保存在同一个redis实例？</strong></p>
+<p>这一类书记使用相同的有效部分，例如都以｛typeid｝为前缀</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://xyylegend.github.io">邦尼</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://xyylegend.github.io/2022/12/04/Redis/">https://xyylegend.github.io/2022/12/04/Redis/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://xyylegend.github.io" target="_blank">邦尼的博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/redis/">redis</a></div><div class="post_share"><div class="social-share" data-image="/./img/03.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/12/06/redis%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/"><img class="prev-cover" src="/./img/04.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">reids缓存</div></div></a></div><div class="next-post pull-right"><a href="/2022/12/03/picgo%E4%B8%AA%E4%BA%BA%E5%9B%BE%E5%BA%8A%E6%90%AD%E5%BB%BA/"><img class="next-cover" src="/./img/04.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">github+picgo搭建个人图床</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/12/06/redis%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/" title="reids缓存"><img class="cover" src="/./img/04.webp" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-12-06</div><div class="title">reids缓存</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/./img/toux.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">邦尼</div><div class="author-info__description">太阳尚远，但一定会有</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/qq.png" target="_blank" title="QQ"><i class="fab fa-qq"></i></a><a class="social-icon" href="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/wx.png" target="_blank" title="微信"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到邦尼的博客</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81Redis%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">一、Redis持久化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-RDB-%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">1.1.</span> <span class="toc-text">1.RDB 持久化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-AOF%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">1.2.</span> <span class="toc-text">2.AOF持久化</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Redis%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="toc-number">2.</span> <span class="toc-text">二、Redis主从复制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8C%E6%AD%A5%E5%8E%9F%E7%90%86"><span class="toc-number">2.0.1.</span> <span class="toc-text">同步原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E5%85%A8%E9%87%8F%E5%90%8C%E6%AD%A5"><span class="toc-number">2.0.1.1.</span> <span class="toc-text">1.全量同步</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%A2%9E%E9%87%8F%E5%90%8C%E6%AD%A5"><span class="toc-number">2.0.1.2.</span> <span class="toc-text">2.增量同步</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5%E4%BC%98%E5%8C%96"><span class="toc-number">2.0.1.3.</span> <span class="toc-text">3.主从同步优化</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81Redis%E5%93%A8%E5%85%B5"><span class="toc-number">3.</span> <span class="toc-text">三、Redis哨兵</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%9B%86%E7%BE%A4%E7%9B%91%E6%8E%A7%E5%8E%9F%E7%90%86"><span class="toc-number">3.1.</span> <span class="toc-text">1.集群监控原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E9%9B%86%E7%BE%A4%E6%95%85%E9%9A%9C%E6%81%A2%E5%A4%8D%E5%8E%9F%E7%90%86"><span class="toc-number">3.2.</span> <span class="toc-text">2.集群故障恢复原理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81-redis%E5%88%86%E7%89%87%E9%9B%86%E7%BE%A4"><span class="toc-number">4.</span> <span class="toc-text">三、 redis分片集群</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-redis%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E6%9F%90%E4%B8%AAkey%E5%BA%94%E5%9C%A8%E5%93%AA%E4%B8%AA%E5%AE%9E%E4%BE%8B%EF%BC%9F"><span class="toc-number">4.1.</span> <span class="toc-text">1.redis如何判断某个key应在哪个实例？</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/12/07/springboot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E5%8E%9F%E7%90%86/" title="springboot自动装配原理"><img src="/./img/04.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="springboot自动装配原理"/></a><div class="content"><a class="title" href="/2022/12/07/springboot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E5%8E%9F%E7%90%86/" title="springboot自动装配原理">springboot自动装配原理</a><time datetime="2022-12-07T11:17:33.000Z" title="发表于 2022-12-07 19:17:33">2022-12-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/06/redis%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/" title="reids缓存"><img src="/./img/04.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="reids缓存"/></a><div class="content"><a class="title" href="/2022/12/06/redis%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/" title="reids缓存">reids缓存</a><time datetime="2022-12-06T12:47:33.000Z" title="发表于 2022-12-06 20:47:33">2022-12-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/04/Redis/" title="redis学习笔记"><img src="/./img/03.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="redis学习笔记"/></a><div class="content"><a class="title" href="/2022/12/04/Redis/" title="redis学习笔记">redis学习笔记</a><time datetime="2022-12-04T14:55:33.000Z" title="发表于 2022-12-04 22:55:33">2022-12-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/03/picgo%E4%B8%AA%E4%BA%BA%E5%9B%BE%E5%BA%8A%E6%90%AD%E5%BB%BA/" title="github+picgo搭建个人图床"><img src="/./img/04.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="github+picgo搭建个人图床"/></a><div class="content"><a class="title" href="/2022/12/03/picgo%E4%B8%AA%E4%BA%BA%E5%9B%BE%E5%BA%8A%E6%90%AD%E5%BB%BA/" title="github+picgo搭建个人图床">github+picgo搭建个人图床</a><time datetime="2022-12-03T13:51:36.000Z" title="发表于 2022-12-03 21:51:36">2022-12-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/01/mysql/" title="mysql笔记"><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/05.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="mysql笔记"/></a><div class="content"><a class="title" href="/2022/12/01/mysql/" title="mysql笔记">mysql笔记</a><time datetime="2022-12-01T12:38:33.970Z" title="发表于 2022-12-01 20:38:33">2022-12-01</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By 邦尼</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

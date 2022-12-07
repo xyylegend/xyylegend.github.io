@@ -4,6 +4,81 @@
   
     
     <entry>
+      <title>springboot自动装配原理</title>
+      <link href="/2022/12/07/springboot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E5%8E%9F%E7%90%86/"/>
+      <url>/2022/12/07/springboot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E5%8E%9F%E7%90%86/</url>
+      
+        <content type="html"><![CDATA[<h1 id="springboot自动装配原理"><a href="#springboot自动装配原理" class="headerlink" title="springboot自动装配原理"></a>springboot自动装配原理</h1><h2 id="1-什么是springboot自动装配"><a href="#1-什么是springboot自动装配" class="headerlink" title="1.什么是springboot自动装配"></a>1.什么是springboot自动装配</h2><pre><code>SpringBoot的自动装配是指：SpringBoot会自动将一些配置类的bean注册到ioc容器，我们可以在需要的地方使用@Autowired或@Resource等注解来使用它。</code></pre><p>其实自动装配可以简单的理解为：<strong>通过注解或者一些简单的配置就能在spring boot的帮助下实现某款功能。</strong></p><h2 id="2-自动装配原理"><a href="#2-自动装配原理" class="headerlink" title="2.自动装配原理"></a>2.自动装配原理</h2><p>1.@@SpringBootApplication 是一个组合注解，由 @ComponentScan、@EnableAutoConfiguration 和 @SpringBootConfiguration 组成</p><ul><li><p>@SpringBootConfiguration 与普通 @Configuration 相比，唯一区别是前者要求整个 app 中只出现一次</p></li><li><p>@ComponentScan</p><ul><li>excludeFilters - 用来在组件扫描时进行排除，也会排除自动配置类</li></ul></li><li><p>@EnableAutoConfiguration 也是一个组合注解，由下面注解组成（<strong>重头戏——自动装配核心</strong>）</p><ul><li>@AutoConfigurationPackage – 用来记住扫描的起始包</li><li>@Import(AutoConfigurationImportSelector.class) 用来加载 <code>META-INF/spring.factories</code> 中的自动配置类</li></ul></li></ul><p>@EnableAutoConfiguration 作用</p><ul><li>一旦加上此注解，那么将会开启自动装配功能，简单点讲，Spring会试图在自己的classpath（类路径）下找到所有配置的Bean然后进行装配。</li><li>装配Bean时，会根据若干个(Conditional)定制规则来进行初始化。我们看一下它的源码</li></ul><p><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/1670412558293.png"></p><p><strong>通过@Import注解导入AutoConfigurationImportSelector.class自动装配类</strong></p><p><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/1670405876464.png"></p><p><strong>该类实现了DeferredImportSelector接口</strong></p><p><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/1670405965267.png"></p><p><strong>DeferredImportSelector接口继承了 ImportSelector接口</strong></p><ul><li>该接口主要是为了导入@Configuration的配置项，而DeferredImportSelector是延期导入，当所有的@Configuration都处理过后才会执行。</li><li>回过头来我们看一下<strong>AutoConfigurationImportSelector的自动配备核心方法 selectImport</strong></li></ul><p><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/1670406301700.png"></p><ul><li>该方法刚开始会先判断是否进行自动装配，而后会从META-INF&#x2F;spring-autoconfigure-metadata.properties读取元数据与元数据的相关属性，紧接着会调用getCandidateConfigurations方法</li></ul><p><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/1670406462502.png"></p><ul><li>在这里又遇到我们的老熟人了<strong>SpringFactoryiesLoader</strong>, 它会读取META-INF&#x2F;spring.factories下的EnableAutoConfiguration的配置，紧接着在进行排除与过滤，进而得到需要装配的类。最后让所有配置在META-INF&#x2F;spring.factories下的AutoConfigurationImportListener执行AutoConfigurationImportEvent事件，代码如下：</li></ul><p><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/1670406657250.png"></p><h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><p>自动装配还是利用了SpringFactoriesLoader来加载META-INF&#x2F;spring.factoires文件里所有配置的EnableAutoConfgruation，它会经过exclude和filter等操作，最终确定要装配的类</p><h2 id="为什么不使用-Import-直接引入自动配置类"><a href="#为什么不使用-Import-直接引入自动配置类" class="headerlink" title="为什么不使用 @Import 直接引入自动配置类"></a>为什么不使用 @Import 直接引入自动配置类</h2><p>有两个原因：</p><ol><li>让主配置类和自动配置类变成了强耦合，主配置类不应该知道有哪些从属配置</li><li>直接用 <code>@Import(自动配置类.class)</code>，引入的配置解析优先级较高，自动配置类的解析应该在主配置没提供时作为默认配置</li></ol><p>因此，采用了 <code>@Import(AutoConfigurationImportSelector.class)</code></p><ul><li>由 <code>AutoConfigurationImportSelector.class</code> 去读取 <code>META-INF/spring.factories</code> 中的自动配置类，实现了弱耦合。</li><li>另外 <code>AutoConfigurationImportSelector.class</code> 实现了 DeferredImportSelector 接口，让自动配置的解析晚于主配置的解析</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> springboot </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> springboot </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>reids缓存</title>
+      <link href="/2022/12/06/redis%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/"/>
+      <url>/2022/12/06/redis%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/</url>
+      
+        <content type="html"><![CDATA[<h1 id="1-redis缓存穿透"><a href="#1-redis缓存穿透" class="headerlink" title="1.redis缓存穿透"></a>1.redis缓存穿透</h1><p> 缓存穿透指的是缓存查询的key不存在，数据库也无数据（即缓存中没有数据，数据库中也没有数据）</p><p><strong>产生原因：</strong></p><ul><li>业务层误操作：缓存中的数据和数据库中的数据被误删除了，所以缓存和数据库中都没有数据；</li><li>恶意攻击：专门访问数据库中没有的数据。</li></ul><p><strong>解决方法：</strong></p><p>（1）DB中查询不到数据的情况，可以将该key对应的value设为null值，或其他特殊值，同时设置短一点的过过期时间，以免影响正常情况。该方法可以防止短时间内同一个key进行暴力攻击。</p><p>（2）布隆过滤器，利用高效的数据结构和算法快速判断该key是否存在数据库，不存在就return，存在就去查询DB数据库刷新KV再return。</p><p>（3）若只是恶意者故意攻击，可以在nginx配置对攻击者ip设置访问阈值。</p><h1 id="2-redis缓存击穿"><a href="#2-redis缓存击穿" class="headerlink" title="2.redis缓存击穿"></a>2.redis缓存击穿</h1><p> 缓存击穿是指，针对某个访问非常频繁的热点数据的请求，无法在缓存中进行处理，紧接着，访问该数据的大量请求，一下子都发送到了后端数据库，导致了数据库压力激增，会影响数据库处理其他请求。（即缓存中没有数据，数据库中有数据。）</p><p><strong>产生原因：</strong> 经常发生在热点数据过期失效</p><p><strong>解决方法：</strong></p><p>（1）为了避免缓存击穿给数据库带来的激增压力，我们的解决方法也比较直接，对于访问特别频繁的热点数据，我们就不设置过期时间了。这样一来，对热点数据的访问请求，都可以在缓存中进行处理，而 Redis 数万级别的高吞吐量可以很好地应对大量的并发请求访问。</p><p>（2）加互斥锁（缓存中没有数据，第1个进入的线程，获取锁并从数据库去取数据，没释放锁之前，其他并行进入的线程会等待100ms，再重新去缓存取数据。这样就防止都去数据库重复取数据，重复往缓存中更新数据情况出现）</p><h1 id="3-redis缓存雪崩"><a href="#3-redis缓存雪崩" class="headerlink" title="3.redis缓存雪崩"></a>3.redis缓存雪崩</h1><p>缓存雪崩是指大量的应用请求无法在 Redis 缓存中进行处理，紧接着，应用将大量请求发送到数据库层，导致数据库层的压力激增。</p><p><strong>产生原因：</strong></p><ul><li>缓存中有大量数据同时过期，导致大量请求无法得到处理</li><li>Redis 缓存实例发生故障宕机了</li></ul><p><strong>解决方法：</strong></p><p> 1.使用缓存集群，保证缓存高可用。<br>2.使用Hystrix，通过熔断、降级、限流三个手段降低雪崩后发生的损失。<br>3.设置不同的过期时间。<br>4.数据预热。在正式部署前，先把可能的数据预先访问一遍，将可能被访问到的数据提前加载到缓存。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> redis </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> redis </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>redis学习笔记</title>
+      <link href="/2022/12/04/Redis/"/>
+      <url>/2022/12/04/Redis/</url>
+      
+        <content type="html"><![CDATA[</center><h1 id="一、Redis持久化"><a href="#一、Redis持久化" class="headerlink" title="一、Redis持久化"></a>一、Redis持久化</h1><h2 id="1-RDB-持久化"><a href="#1-RDB-持久化" class="headerlink" title="1.RDB 持久化"></a>1.RDB 持久化</h2><p>(1) RDB 持久化在四种情况下会执行</p><ul><li>执行 save 命令</li><li>执行 bgsave 命令</li><li>Redis 停机时</li><li>触发 RDB 条件时</li></ul><p>(2)RDB 方式 bgsave 的基本流程？</p><ul><li>fork主进程得到一个子进程，共享内存空间</li><li>子进程读取内存数据并写入新 的RDB 文件</li><li>用新 RDB 文件替换旧的 RDB 文件</li></ul><p><strong>bgsave 开始时会 fork主进程得到子进程，子进程共享主进程的内存数据。完成 fork 后读取内存数据并写入 RDB 文件。fork 采用的是 copy-on-write技术：当主进程执行读操作时，访问共享内存；当主进程执行写操作时，则会拷贝一份数据，执行写操作。</strong></p><p><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/202206142216920.png"></p><p>(3)RDB 的缺点</p><ul><li>RDB 执行间隔时间长，两次 RDB 之间写入数据有丢失的风险</li><li>fork 子进程、压缩、写出 RDB 文件都比较耗时</li></ul><h2 id="2-AOF持久化"><a href="#2-AOF持久化" class="headerlink" title="2.AOF持久化"></a>2.AOF持久化</h2><p>（1）介绍：AOF全称为 Append Only File（追加文件），Redis 处理的每一个写命令都会记录在 AOF 文件，可以看做是命令日志文件。</p><p>（2）AOF文件重写</p><p>因为是记录命令，AOF 文件会比 RDB 文件大的多。而且 AOF 会记录对同一个 key 的多次写操作，但只有最后一次写操作才有意义。通过执行 bgrewriteaof 命令，可以让 AOF 文件执行重写功能，用最少的命令达到相同效果</p><h1 id="二、Redis主从复制"><a href="#二、Redis主从复制" class="headerlink" title="二、Redis主从复制"></a>二、Redis主从复制</h1><p>单节点 Redis的并发能力是有上限的，要进一步提高 Redis 的并发能力，就需要搭建主从集群，实现读写分离</p><p><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/redis.png"></p><h3 id="同步原理"><a href="#同步原理" class="headerlink" title="同步原理"></a>同步原理</h3><h4 id="1-全量同步"><a href="#1-全量同步" class="headerlink" title="1.全量同步"></a>1.全量同步</h4><ul><li><strong>Replication      Id</strong>：简称      replid，是数据集的标记，id 一致则说明是同一数据集。每一个 master 都有唯一的replid，slave 则会继承 master 节点的      replid；</li><li><strong>offset</strong>：偏移量，随着记录在      repl_baklog 中的数据增多而逐渐增大。slave 完成同步时也会记录当前同步的offset，即 slave 的 offset 永远小于等于      master 的 offset；当 slave 的 offset 小于 master 的 offset，说明 slave 数据落后于      master，需要更新。</li></ul><p>完整流程描述：</p><ul><li>slave 节点请求增量同步</li><li>master 节点判断      replid，发现不一致，拒绝增量同步，选择全量同步</li><li>master 将完整内存数据生成      RDB，发送 RDB 到 slave</li><li>slave 清空本地数据，加载      master 的 RDB</li><li>master 将 RDB      期间的命令记录在 repl_baklog，并持续将 log 中的命令发送给 slave</li><li>slave 执行接收到的命令，保持与      master 之间的同步</li></ul><h4 id="2-增量同步"><a href="#2-增量同步" class="headerlink" title="2.增量同步"></a>2.增量同步</h4><p><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/redis2.png"></p><p><strong>repl_backlog 原理</strong></p><p>master 怎么知道 slave 与自己的数据差异在哪里？</p><p>这就要说到全量同步时的 repl_baklog 文件了。</p><p>这个文件是一个固定大小的数组，只不过数组是环形，也就是说<strong>角标到达数组末尾后，会再次从 0 开始读写</strong>，这样数组头部的数据就会被覆盖。repl_baklog 中会记录 Redis 处理过的命令日志及 offset，包括 master 当前的 offset 和 slave 已经拷贝到的 offset</p><h4 id="3-主从同步优化"><a href="#3-主从同步优化" class="headerlink" title="3.主从同步优化"></a>3.主从同步优化</h4><p>主从同步可以保证主从数据的一致性，非常重要。可以从以下几个方面来优化 Redis 主从集群</p><ul><li>在 master 中配置 repl-diskless-sync      yes 启用无磁盘复制，避免全量同步时的磁盘      IO</li><li>Redis      单节点上的内存占用不要太大，减少 RDB 导致的过多磁盘IO</li><li>适当提高 repl_baklog      的大小，发现 slave 宕机时尽快实现故障恢复，尽可能避免全量同步</li><li>限制一个 master 上的      slave 节点数量，如果实在是太多 slave，则可以采用<strong>主-从-从</strong>链式结构，减少 master 压力</li></ul><h1 id="三、Redis哨兵"><a href="#三、Redis哨兵" class="headerlink" title="三、Redis哨兵"></a>三、Redis哨兵</h1><p>Redis<br>提供了哨兵(Sentinel) 机制来实现主从集群的自动故障恢复</p><p><img src="https://cdn.jsdelivr.net/gh/xyylegend/picgo_photo/imgs/redis3.png"></p><ul><li><strong>监控</strong>：Sentinel 会不断检查您的      master 和 slave 是否按预期工作。</li><li><strong>自动故障恢复</strong>：如果 master 故障，<strong>Sentinel      会将一个 slave 提升为 master</strong>。当故障实例恢复后也以新的 master 为主。</li><li><strong>通知</strong>：Sentinel 充当 Redis      客户端的服务发现来源，当集群发生故障转移时，会将最新信息推送给 Redis 客户端。</li></ul><h2 id="1-集群监控原理"><a href="#1-集群监控原理" class="headerlink" title="1.集群监控原理"></a>1.集群监控原理</h2><p>Sentinel 基于心跳机制监测服务状态，每隔 1 秒向集群的每个实例发送 ping 命令</p><ul><li>主观下线：如果某 Sentinel      节点发现某实例未在规定时间响应，则认为该实例<strong>主观下线</strong>。</li><li>客观下线：<strong>若超过指定数量(quorum)      的 Sentinel 都认为该实例主观下线</strong>，则该实例<strong>客观下线</strong>。quorum 值最好超过 Sentinel 实例数量的一半。</li></ul><h2 id="2-集群故障恢复原理"><a href="#2-集群故障恢复原理" class="headerlink" title="2.集群故障恢复原理"></a>2.集群故障恢复原理</h2><p>一旦发现 master 故障，sentinel 需要在 salve 中选择一个作为新的 master，步骤如下：</p><ol><li>首先会判断 slave 节点与 master 节点断开时间长短，如果超过指定值(down-after-milliseconds * 10)，则会排除该 slave 节点</li><li>然后判断      slave 节点的 slave-priority 值，<strong>越小优先级越高</strong>，如果是 0 则永不参与选举</li><li>如果      slave-prority 一样，则判断 slave 节点的      offset 值，越大说明数据越新，优先级越高</li><li>最后是判断      slave 节点的运行 id 大小，越小优先级越高</li></ol><p>当选出一个新的 master 后，去实现切换：</p><ol><li>sentinel 给备选的 slave1 节点发送 slaveof no one 命令，让该节点成为 master</li><li>sentinel      给所有其它 slave 发送      slaveof 192.168.150.101 7002 之类的命令，让这些      slave 成为新 master 的从节点，开始从新的      master 上同步数据</li><li>最后，sentinel      将故障节点标记为 slave，当故障节点恢复后会自动成为新的      master 的 slave 节点</li></ol><h1 id="三、-redis分片集群"><a href="#三、-redis分片集群" class="headerlink" title="三、 redis分片集群"></a>三、 redis分片集群</h1><p>主从和哨兵可以解决高可用、<a href="https://so.csdn.net/so/search?q=%E9%AB%98%E5%B9%B6%E5%8F%91&spm=1001.2101.3001.7020">高并发</a>读的问题。但是依然有两个问题没有解决：</p><ul><li>海量数据存储问题</li><li>高并发写的问题</li></ul><p>集群中有多个master，每个master保存不同数据</p><p>每个master都可以有多个slave节点</p><p>master之间通过ping监测彼此健康状态</p><p>客户端请求可以访问集群任意节点，最终都会被转发到正确节点</p><p>散列插槽</p><p>Redis会把每一个master节点映射到0~16383共16384个插槽（hash slot）上</p><h2 id="1-redis如何判断某个key应在哪个实例？"><a href="#1-redis如何判断某个key应在哪个实例？" class="headerlink" title="1.redis如何判断某个key应在哪个实例？"></a>1.redis如何判断某个key应在哪个实例？</h2><p>1.将16384个插槽分配到不同的实例</p><p>2.根据key的有效部分计算哈希值，对16384取余</p><p>3.余数作为插槽，寻找插槽所在的实例即可</p><p><strong>redis如何将同一类数据固定保存在同一个redis实例？</strong></p><p>这一类书记使用相同的有效部分，例如都以｛typeid｝为前缀</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> redis </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> redis </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>github+picgo搭建个人图床</title>
       <link href="/2022/12/03/picgo%E4%B8%AA%E4%BA%BA%E5%9B%BE%E5%BA%8A%E6%90%AD%E5%BB%BA/"/>
       <url>/2022/12/03/picgo%E4%B8%AA%E4%BA%BA%E5%9B%BE%E5%BA%8A%E6%90%AD%E5%BB%BA/</url>
