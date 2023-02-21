@@ -79,6 +79,31 @@
     
     
     <entry>
+      <title>reids常见的应用场景</title>
+      <link href="/2022/12/06/%E4%BB%80%E4%B9%88%E6%98%AF%20Redis%EF%BC%9F/"/>
+      <url>/2022/12/06/%E4%BB%80%E4%B9%88%E6%98%AF%20Redis%EF%BC%9F/</url>
+      
+        <content type="html"><![CDATA[<h2 id="什么是-Redis？Redis-有哪些特点？Redis-有哪些常见的应用场景？"><a href="#什么是-Redis？Redis-有哪些特点？Redis-有哪些常见的应用场景？" class="headerlink" title="什么是 Redis？Redis 有哪些特点？Redis 有哪些常见的应用场景？"></a>什么是 Redis？Redis 有哪些特点？Redis 有哪些常见的应用场景？</h2><p>Redis是一个基于Key-Value存储结构的Nosql开源内存数据库。<br>它提供了5种常用的数据类型，string、list、set、zset、hash。<br>针对不同的结构，可以解决不同场景的问题。<br>因此它可以覆盖应用开发中大部分的业务场景，比如top10问题(zset)、好友关注列表(set)、热点话题(string)等。<br>其次，由于Redis是基于内存存储，并且在数据结构上做了大量的优化所以IO<br>性能比较好，在实际开发中，会把它作为应用与数据库之间的一个分布式缓存组<br>件。<br>并且它又是一个非关系型数据的存储，不存在表之间的关联查询问题，所以它可<br>以很好的提升应用程序的数据IO效率。<br>最后，作为企业级开发来说，它又提供了主从复制+哨兵、以及集群方式实现高<br>可用，在Redis集群里面，通过slot槽的方式实现了数据分片，进一步提升了性<br>能。</p><p>补充一下redis的五大基本数据类型包括string、list、set、zset（sorted set）、hash；另外，三大特殊数据类型包括bitmap、geosaptial、HyperLoLog。<br><strong>string</strong>的数据结构是简单的<strong>key-value类型</strong>。<br>常用命令：set、get、mset（批量设置）、mget（批量获取）、exists（判断key存在与否）、incr（自增）、decr（自减）、setex（为key设置过期时间）、setnx（若不存在，则创建key）<br>应用场景： 一般常用在需要<strong>计数</strong>的场景，比如用户的<strong>访问次数</strong>、热点文章的<strong>点赞转发</strong>数量等<br>list： Redis的list是双向链表，可实现栈、队列、阻塞队列的数据结构。<br>常用命令：lpush、lpop（左进左出）、rpush、rpop（右进右出）、lrange（list获取范围内的元素）、llen（查看元素个数）、linsert（插入）<br>应用场景：<strong>发布与订阅</strong>或者说<strong>消息队列</strong>、<strong>慢查询</strong><br>set： set类似于java中的HashSet，集合内的元素无序不可重复。相对于list，set集合提供了判断某个成员是否存在的重要接口，并可实现交集、并集、差集操作。<br>常用命令：sadd、spop（添加、弹出）、smembers（查看所有成员）、sismember（判断某个成员是否存在）、scard（元素个数）、sinter、sunion、sdiff（交并差操作）等<br>应用场景：可实现<strong>共同</strong>粉丝、共同关注、共同爱好等功能<br>szet： 和set相比，sorted set多了个权重参数score ，使得集合中的元素能够按score进行有序排序，还可通过score的范围获取元素的列表。<br>常用命令：zadd、zrem（增加删除）、zcard（元素个数）、zrange（获取某一范围的元素）、zrevrange（升序获取）<br>应用场景：需要对数据根据权重进行排序的场景，如直播系统中，<strong>实时排行</strong>信息包括在线用户列表， 礼物排行榜、<strong>弹幕消息</strong>等<br>hash： hash类似jdk1.8之前的HashMap，是一个string类型的key和value的映射表，特别适合存储对象。<br>常用命令：hset、hget、hmset、hmget（批量设置获取）、hkeys（获取所有key）、hvals（获取所有value）、hgetall（获取所有键值对）<br>应用场景：系统中关于<strong>对象的存储</strong>，如<strong>用户信息</strong>、<strong>商品信息</strong>等。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> redis </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> redis </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>redis学习笔记</title>
       <link href="/2022/12/04/Redis/"/>
       <url>/2022/12/04/Redis/</url>
