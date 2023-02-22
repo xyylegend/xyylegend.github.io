@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>JDK和CGLIB动态代理的区别</title>
+      <link href="/2023/02/15/JDK%E5%92%8CCGLIB%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E7%9A%84%E5%8C%BA%E5%88%AB/"/>
+      <url>/2023/02/15/JDK%E5%92%8CCGLIB%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E7%9A%84%E5%8C%BA%E5%88%AB/</url>
+      
+        <content type="html"><![CDATA[<h1 id="JDK和CGLIB动态代理的区别"><a href="#JDK和CGLIB动态代理的区别" class="headerlink" title="JDK和CGLIB动态代理的区别"></a>JDK和CGLIB动态代理的区别</h1><p>1,JDK和<a href="https://so.csdn.net/so/search?q=CGLIB%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86&spm=1001.2101.3001.7020">CGLIB动态代理</a>的区别:</p><p>(1)JDK代理使用的是反射机制生成一个实现代理接口的匿名类，在调用具体方法前调用InvokeHandler来处理。</p><p>(2)CGLIB代理使用字节码处理框架asm，对代理对象类的class文件加载进来，<strong>通过修改字节码生成子类</strong>。</p><p>(3)JDK动态代理机制是委托机制，只能对<strong>实现接口的类</strong>生成代理，通过反射动态实现接口类；CGLIB则使用的<strong>继承机制</strong>，针对类实现代理，被代理类和代理类是继承关系，所以代理类是可以赋值给被代理类的，因为是继承机制，<strong>不能代理final修饰的类</strong>。</p><p>2.总结</p><p>   a.jdk代理只能对实现了接口的类进行代理，而cglib代理可以对普通类进行代理；<br>   b.jdk代理是通过反射的方式来实现动态代理，而cglib则是通过为目标类生成一个子类的方式来实现动态代理；<br>   c.由于cglib代理是为目标类生成了一个子类，并对父类方法进行增强，所以目标类不能用final修饰；</p><p>3、使用JDK还是CGLIB<br>1)如果目标对象实现了接口，默认情况下会采用JDK的动态代理实现AOP，可以强制使用CGLIB实现AOP<br>2)如果目标对象没有实现了接口，必须采用CGLIB库，spring会自动在JDK动态代理和CGLIB之间转换</p><p>3、强制使用CGLIB实现AOP的方法<br>1）添加CGLIB库(aspectjrt-xxx.jar、aspectjweaver-xxx.jar、cglib-nodep-xxx.jar)<br>2）在Spring配置文件中加入&lt;aop:aspectj-autoproxy proxy-target-class&#x3D;“true”&#x2F;&gt;</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> java </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> JDK和CGLIB </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>redis延时双删</title>
       <link href="/2022/12/08/redis%E5%BB%B6%E6%97%B6%E5%8F%8C%E5%88%A0/"/>
       <url>/2022/12/08/redis%E5%BB%B6%E6%97%B6%E5%8F%8C%E5%88%A0/</url>
